@@ -5,3 +5,4 @@ sqlparse==0.5.1
 typing_extensions==4.12.2
 
 django-phonenumber-field==8.0.0
+drf-yasg==1.21.7

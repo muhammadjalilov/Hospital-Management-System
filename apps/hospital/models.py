@@ -9,17 +9,21 @@ from apps.users.models import User
 
 class Hospital(BaseModel):
     name = CharField(max_length=256)
-    address = CharField(max_length=512,blank=True, null=True)
+    address = CharField(max_length=512, blank=True, null=True)
     phone_number = PhoneNumberField(blank=True, null=True)
     State = CharField(max_length=2, blank=True, default='UZ')
     zipcode = IntegerField(validators=[MaxValueValidator(999999), MinValueValidator(100000)], blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Department(BaseModel):
     name = CharField(max_length=256)
     hospital = ForeignKey(Hospital, on_delete=CASCADE, related_name='departments')
 
-
+    def __str__(self):
+        return f"{self.name}-{self.hospital.name}"
 
 
 class Staff(BaseModel):

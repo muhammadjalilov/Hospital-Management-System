@@ -14,7 +14,8 @@ class Patient(BaseModel):
         return self.invoices.aggregate(total=Sum('cost'))['total'] or 0
 
     def save(self, *args, **kwargs):
-        self.total_cost = self.get_total_cost_invoices()
+        if self.pk:
+            self.total_cost = self.get_total_cost_invoices()
         super().save(*args, **kwargs)
 
 

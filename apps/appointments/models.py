@@ -4,12 +4,13 @@ from phonenumber_field.modelfields import PhoneNumberField
 from apps.doctor.models import Doctor
 from apps.patients.models import Patient
 from apps.shared.models import BaseModel
+from apps.users.models import User
 
 
 class Appointment(BaseModel):
-    patient = ForeignKey(Patient, on_delete=CASCADE, related_name='appointments')
+    patient = ForeignKey(User, on_delete=CASCADE, related_name='appointments')
     doctor = ForeignKey(Doctor, on_delete=CASCADE, related_name='appointments')
-    datetime = DateTimeField(auto_now=True)
+    datetime = DateTimeField()
     status = BooleanField(default=False)
 
 

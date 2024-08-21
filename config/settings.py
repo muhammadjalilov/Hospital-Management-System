@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
     # external apps
     "rest_framework",
+    "drf_yasg",
     "phonenumber_field",
 ]
 
@@ -135,3 +136,12 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework_yaml.parsers.YAMLParser',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework_yaml.renderers.YAMLRenderer',
+    ),
+}
