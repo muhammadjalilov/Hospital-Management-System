@@ -1,4 +1,3 @@
-from django.db.models import Q
 from django.template.context_processors import request
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -8,14 +7,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.appointments.models import Appointment, Invoice, Prescription
-from apps.appointments.serializers import AppointmentSerializer, AppointmentsForDoctors, \
-    PrescriptionSerializer, InvoiceListSerializer
+from apps.appointments.serializers import AppointmentSerializer, \
+    PrescriptionSerializer, InvoiceListSerializer, AppointmentsListSerializer
 from apps.patients.models import Room
+from apps.shared.permissions import IsPatient, IsDoctor
 
 
 class AppointmentCreateAPIView(generics.CreateAPIView):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
+    permission_classes = [IsPatient, ]
 
     def perform_create(self, serializer):
         if self.request.user.is_authenticated:
@@ -25,30 +26,35 @@ class AppointmentCreateAPIView(generics.CreateAPIView):
 
 
 class AppointmentListAPIView(generics.ListAPIView):
-    serializer_class = AppointmentsForDoctors
+    serializer_class = AppointmentsListSerializer
 
     def get_queryset(self):
-        return Appointment.objects.filter(doctor=self.request.user.doctor).all()
+        user = self.request.user
+        if hasattr(user, 'doctor'):
+            return Appointment.objects.filter(doctor=user.doctor).all()
+        elif hasattr(user, 'patient'):
+            return Appointment.objects.filter(patient=user.patient).all()
 
 
 class UnconfirmedAppointmentListAPIView(generics.ListAPIView):
-    serializer_class = AppointmentsForDoctors
-    permission_classes = [IsAuthenticated, ]
+    serializer_class = AppointmentsListSerializer
+    permission_classes = [IsDoctor, ]
 
     def get_queryset(self):
         return Appointment.objects.filter(doctor=self.request.user.doctor, status=False).all()
 
 
 class ConfirmedAppointmentListAPIView(generics.ListAPIView):
-    serializer_class = AppointmentsForDoctors
-    permission_classes = [IsAuthenticated, ]
+    serializer_class = AppointmentsListSerializer
+    permission_classes = [IsDoctor, ]
 
     def get_queryset(self):
         return Appointment.objects.filter(doctor=self.request.user.doctor, status=True).all()
 
 
 class ChangeStatusAppointments(generics.RetrieveUpdateAPIView):
-    serializer_class = AppointmentsForDoctors
+    serializer_class = AppointmentsListSerializer
+    permission_classes = [IsDoctor,]
 
     def get_queryset(self):
         return Appointment.objects.filter(doctor=self.request.user.doctor, status=False).all()
@@ -86,16 +92,16 @@ class PrescriptionCreateListAPIView(ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if hasattr(user,'doctor'):
+        if hasattr(user, 'doctor'):
             return Prescription.objects.filter(doctor=self.request.user.doctor)
-        elif hasattr(user,'patient'):
+        elif hasattr(user, 'patient'):
             return Prescription.objects.filter(patient=self.request.user.patient)
         else:
             return Prescription.objects.none()
 
     def perform_create(self, serializer):
         user = self.request.user
-        if hasattr(user,'doctor'):
+        if hasattr(user, 'doctor'):
             serializer.save(doctor=user.doctor)
         else:
             raise ValidationError('Only doctors can write prescription')
@@ -106,8 +112,5 @@ class InvoiceListAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        if hasattr(user,'patient'):
+        if hasattr(user, 'patient'):
             return Invoice.objects.filter(patient=user.patient).all().order_by('-created_at')
-
-
-
