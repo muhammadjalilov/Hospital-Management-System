@@ -19,18 +19,26 @@ class AppointmentSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class AppointmentsForDoctors(serializers.ModelSerializer):
-    patient = serializers.PrimaryKeyRelatedField(read_only=True)
-
+class AppointmentsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
-        fields = ['patient', 'datetime', 'status']
+        fields = ['datetime', 'status']
 
     def update(self, instance, validated_data):
         if 'status' in validated_data:
             instance.status = validated_data['status']
             instance.save()
         return instance
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        first_name = instance.patient.user.first_name
+        last_name = instance.patient.user.last_name
+        first_name_d = instance.doctor.user.first_name
+        last_name_d = instance.doctor.user.last_name
+        representation['Patient'] = f"{first_name} {last_name}"
+        representation['Doctor'] = f"{first_name_d} {last_name_d}"
+        return representation
 
 
 class PrescriptionSerializer(serializers.ModelSerializer):

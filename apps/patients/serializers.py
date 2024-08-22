@@ -1,9 +1,7 @@
 from rest_framework import serializers
 
-from apps.appointments.models import Appointment
-from apps.appointments.serializers import AppointmentsForDoctors
 from apps.patients.models import Patient
-from apps.users.models import User
+
 from apps.users.serializers import UserSerializer
 
 
@@ -28,24 +26,14 @@ class PatientCreateSerializer(serializers.ModelSerializer):
 
 class PatientsListSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    appointments = serializers.PrimaryKeyRelatedField(many=True,read_only=True)
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         user_data = representation.pop('user')
         representation['first_name'] = user_data.get('first_name')
         representation['last_name'] = user_data.get('last_name')
-
-        doctor = self.context['request'].user.doctor
-
-        if 'appointments' in representation and len(representation['appointments']) > 0:
-            for appointment in [i for i in representation['appointments'] if i.get('doctor')==doctor.id]:
-                representation['datetime'] = appointment.get('datetime')
-                representation['status'] = appointment.get('status')
-
-        representation.pop('appointments')
         return representation
 
     class Meta:
         model = Patient
-        fields = ['user', 'appointments']
+        fields = ['user']

@@ -142,3 +142,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CRONJOBS = [
     ('*/1 * * * *', 'apps.patients.tasks.clear_expired_rooms_task'),
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
