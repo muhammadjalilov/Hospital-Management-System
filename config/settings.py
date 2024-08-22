@@ -138,3 +138,7 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CRONJOBS = [
+    ('*/1 * * * *', 'apps.patients.tasks.clear_expired_rooms_task'),
+]
