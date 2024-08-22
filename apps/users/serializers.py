@@ -1,13 +1,13 @@
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import CharField
-from rest_framework.serializers import ModelSerializer
+from rest_framework import fields
+from rest_framework import serializers
 
 from apps.users.models import User
 
 
-class UserSerializer(ModelSerializer):
-    password = CharField(write_only=True, required=True, style={'input_type': 'password'})
-    confirm_password = CharField(write_only=True, required=True, style={'input_type': 'password'})
+class UserSerializer(serializers.ModelSerializer):
+    password = fields.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    confirm_password = fields.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
     class Meta:
         model = User

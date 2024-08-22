@@ -1,16 +1,15 @@
-from django.shortcuts import render
-from rest_framework.generics import ListAPIView
+from rest_framework import generics
 
 from apps.hospital.models import Hospital, Department
 from apps.hospital.serializers import HospitalSerializer, DepartmentSerializer
 
 
-class HospitalListAPIView(ListAPIView):
+class HospitalListAPIView(generics.ListAPIView):
     queryset = Hospital.objects.all()
     serializer_class = HospitalSerializer
 
 
-class DepartmentListAPIView(ListAPIView):
+class DepartmentListAPIView(generics.ListAPIView):
     serializer_class = DepartmentSerializer
 
     def get_queryset(self):

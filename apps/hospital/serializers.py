@@ -1,17 +1,16 @@
 from rest_framework.fields import SerializerMethodField
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 
-from apps.doctor.models import Doctor
 from apps.hospital.models import Department, Hospital
 
 
-class HospitalSerializer(ModelSerializer):
+class HospitalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hospital
         fields = ['name', 'address', 'phone_number']
 
 
-class DepartmentSerializer(ModelSerializer):
+class DepartmentSerializer(serializers.ModelSerializer):
     specialities = SerializerMethodField(read_only=True)
     class Meta:
         model = Department

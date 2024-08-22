@@ -1,26 +1,25 @@
-from rest_framework.fields import SerializerMethodField
 from rest_framework.relations import HyperlinkedIdentityField
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 
 from apps.doctor.models import Doctor, Specialities
 from apps.hospital.serializers import DepartmentSerializer
 from apps.users.serializers import UserSerializer
 
 
-class SpecialitySerializer(ModelSerializer):
+class SpecialitySerializer(serializers.ModelSerializer):
     department = DepartmentSerializer(read_only=True)
 
     class Meta:
         model = Specialities
         fields = ['name', 'description', 'cost', 'department']
 
-class SpecialitySerializerListRetrieve(ModelSerializer):
+class SpecialitySerializerListRetrieve(serializers.ModelSerializer):
     class Meta:
         model = Specialities
         fields = ['name','description','cost']
 
 
-class DoctorSerializer(ModelSerializer):
+class DoctorSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
     class Meta:
@@ -36,7 +35,7 @@ class DoctorSerializer(ModelSerializer):
         return doctor
 
 
-class DoctorDetailSerializer(ModelSerializer):
+class DoctorDetailSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     speciality = SpecialitySerializer(read_only=True)
 
@@ -54,11 +53,11 @@ class DoctorDetailSerializer(ModelSerializer):
         model = Doctor
         fields = ['user', 'experience', 'speciality']
 
-class DoctorListSerializer(ModelSerializer):
+class DoctorListSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    speciality = SerializerMethodField()
-    # hospital = SerializerMethodField()
-    # hospital_address = SerializerMethodField()
+    speciality = serializers.CharField(source="speciality.name")
+    hospital = serializers.CharField(source="speciality.department.hospital.name")
+    hospital_address = serializers.CharField(source="speciality.department.hospital.address")
     url = HyperlinkedIdentityField(view_name='doctor:doctor_retrieve', lookup_field='pk')
 
     def to_representation(self, instance):
@@ -70,15 +69,5 @@ class DoctorListSerializer(ModelSerializer):
 
     class Meta:
         model = Doctor
-        fields = ['user','speciality','url']
+        fields = ['user','speciality','url','hospital','hospital_address']
 
-    def get_speciality(self,obj):
-        return obj.speciality.name
-
-    # def get_hospital(self,obj):
-    #     if obj.speciality:
-    #         return obj.speciality.department.hospital.name
-    #
-    # def get_hospital_address(self,obj):
-    #     if obj.speciality:
-    #         return obj.speciality.department.hospital.address

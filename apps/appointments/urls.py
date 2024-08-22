@@ -1,7 +1,7 @@
 from django.urls import path
 
 from apps.appointments.views import AppointmentCreateAPIView, AppointmentListAPIView, UnconfirmedAppointmentListAPIView, \
-    ConfirmedAppointmentListAPIView
+    ConfirmedAppointmentListAPIView, ChangeStatusAppointments, PrescriptionCreateListAPIView, InvoiceListAPIView
 
 app_name = 'appointments'
 urlpatterns = [
@@ -9,4 +9,7 @@ urlpatterns = [
     path('', AppointmentListAPIView.as_view(), name='appointments_list'),
     path('unconfirmed-appointments/', UnconfirmedAppointmentListAPIView.as_view(), name='unconfirmed_appointments'),
     path('confirmed-appointments/', ConfirmedAppointmentListAPIView.as_view(), name='confirmed_appointments'),
+    path('change-status-appointments/<int:pk>/', ChangeStatusAppointments.as_view(), name='change_status_appointments'),
+    path('prescription/', PrescriptionCreateListAPIView.as_view(), name='prescription'),
+    path('invoices/', InvoiceListAPIView.as_view(), name='invoices'),
 ]
