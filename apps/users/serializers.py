@@ -16,8 +16,12 @@ class UserSerializer(serializers.ModelSerializer):
         ref_name = 'CustomUserSerializer'
 
     def validate(self, attrs):
-        if attrs['password'] != attrs['confirm_password']:
-            raise ValidationError('Passwords should be match')
+        password = attrs.get('password')
+        confirm_password = attrs.get('confirm_password')
+
+        if password != confirm_password:
+            raise ValidationError('Passwords should match')
+
         return attrs
 
     def create(self, validated_data):

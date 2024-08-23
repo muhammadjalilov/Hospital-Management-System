@@ -28,4 +28,13 @@ class IsDoctorOrReadOnly(BasePermission):
             return obj == request.user.doctor
         return False
 
+class IsPatientOrReadOnly(BasePermission):
+    message = 'You must be a patient to access this resource.'
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if hasattr(request.user,'patient'):
+            return obj == request.user.patient
+        return False
 

@@ -13,10 +13,11 @@ class SpecialitySerializer(serializers.ModelSerializer):
         model = Specialities
         fields = ['name', 'description', 'cost', 'department']
 
+
 class SpecialitySerializerListRetrieve(serializers.ModelSerializer):
     class Meta:
         model = Specialities
-        fields = ['name','description','cost']
+        fields = ['name', 'description', 'cost']
 
 
 class DoctorSerializer(serializers.ModelSerializer):
@@ -47,11 +48,26 @@ class DoctorDetailSerializer(serializers.ModelSerializer):
         representation['address'] = user_data.get('address', '')
         representation['phone_number'] = user_data.get('phone_number', '')
         representation['gender'] = user_data.get('gender', '')
+        representation.update(user_data)
         return representation
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', None)
+
+        instance = super().update(instance, validated_data)
+
+        if user_data:
+            user = instance.user
+            user_serializer = UserSerializer(user, data=user_data, partial=True)
+            if user_serializer.is_valid():
+                user_serializer.save()
+
+        return instance
 
     class Meta:
         model = Doctor
         fields = ['user', 'experience', 'speciality']
+
 
 class DoctorListSerializer(serializers.ModelSerializer):
     user = UserSerializer()
@@ -69,5 +85,4 @@ class DoctorListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Doctor
-        fields = ['user','speciality','url','hospital','hospital_address']
-
+        fields = ['user', 'speciality', 'url', 'hospital', 'hospital_address']
