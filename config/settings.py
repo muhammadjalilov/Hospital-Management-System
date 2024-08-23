@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -46,10 +46,12 @@ INSTALLED_APPS = [
 
     # external apps
     "rest_framework",
-    "drf_yasg",
+    'drf_spectacular',
     "phonenumber_field",
     'django_extensions',
     'django_crontab',
+    'rest_framework_simplejwt',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -146,5 +148,44 @@ CRONJOBS = [
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your Project API',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+
+    'AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'SWAGGER_UI_SETTINGS': {
+        'persistAuthorization': True,
+    },
+}
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # exp time access token
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # exp time refresh token
+}
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',  # Используйте email как поле для входа
+    'USER_CREATE_PASSWORD_RETYPE': True,  # Требовать повторный ввод пароля при создании пользователя
+    'USERNAME_CHANGED_EMAIL_CONFIRMATION': True,  # Подтверждение изменения email
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,  # Подтверждение изменения пароля
+    'SEND_CONFIRMATION_EMAIL': True,  # Отправка email для подтверждения регистрации
+    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': 'email/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': 'activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,  # Отправка email для активации аккаунта
+    'SERIALIZERS': {
+        'user_create': 'djoser.serializers.UserCreateSerializer',
+        'user': 'djoser.serializers.UserSerializer',
+        'current_user': 'djoser.serializers.UserSerializer',
+    },
 }

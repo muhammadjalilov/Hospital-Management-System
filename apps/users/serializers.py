@@ -13,6 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['first_name', 'last_name', 'username', 'email', 'address', 'avatar', 'birthdate', 'gender',
                   'phone_number','password','confirm_password']
+        ref_name = 'CustomUserSerializer'
 
     def validate(self, attrs):
         if attrs['password'] != attrs['confirm_password']:
