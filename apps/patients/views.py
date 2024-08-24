@@ -18,10 +18,10 @@ class PatientListAPIView(ListAPIView):
 
     def get_queryset(self):
         return Patient.objects.filter(appointments__doctor=self.request.user.doctor,
-                                      appointments__status=True).all().distinct()
+                                      appointments__status=True).all().select_related('user').prefetch_related('appointments__doctor','appointments').distinct()
 
 
 class PatientRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
-    queryset = Patient.objects.all()
+    queryset = Patient.objects.all().select_related('user')
     serializer_class = PatientSerializer
     permission_classes = [IsPatientOrReadOnly, ]

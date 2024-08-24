@@ -11,12 +11,12 @@ class DoctorRegisterAPIView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny,]
 
 class DoctorListAPIView(generics.ListAPIView):
-    queryset = Doctor.objects.filter(status=True).all()
+    queryset = Doctor.objects.filter(status=True).all().select_related('user','speciality__department__hospital')
     serializer_class = DoctorListSerializer
 
 
 class DoctorRetrieveAPIView(generics.RetrieveUpdateAPIView):
-    queryset = Doctor.objects.filter(status=True).all()
+    queryset = Doctor.objects.filter(status=True).all().select_related('user')
     serializer_class = DoctorDetailSerializer
     permission_classes = [IsDoctorOrReadOnly,]
 

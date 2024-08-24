@@ -31,9 +31,9 @@ class AppointmentListAPIView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         if hasattr(user, 'doctor'):
-            return Appointment.objects.filter(doctor=user.doctor).all()
+            return Appointment.objects.filter(doctor=user.doctor).all().select_related('patient__user','doctor__user')
         elif hasattr(user, 'patient'):
-            return Appointment.objects.filter(patient=user.patient).all()
+            return Appointment.objects.filter(patient=user.patient).all().select_related('patient__user','doctor__user')
 
 
 class UnconfirmedAppointmentListAPIView(generics.ListAPIView):
@@ -93,9 +93,9 @@ class PrescriptionCreateListAPIView(ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         if hasattr(user, 'doctor'):
-            return Prescription.objects.filter(doctor=self.request.user.doctor)
+            return Prescription.objects.filter(doctor=self.request.user.doctor).select_related('doctor')
         elif hasattr(user, 'patient'):
-            return Prescription.objects.filter(patient=self.request.user.patient)
+            return Prescription.objects.filter(patient=self.request.user.patient).select_related('doctor')
         else:
             return Prescription.objects.none()
 
