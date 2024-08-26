@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'djoser',
     "debug_toolbar",
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -197,3 +198,6 @@ DJOSER = {
         'current_user': 'djoser.serializers.UserSerializer',
     },
 }
+
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+

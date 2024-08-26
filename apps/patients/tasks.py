@@ -1,9 +1,9 @@
-from django.utils import timezone
+from celery import shared_task
 
 from apps.patients.models import Room
 
 
+@shared_task
 def clear_expired_rooms_task():
-    with open('cron_log.txt', 'a') as log:
-        log.write(f'crontab worked {timezone.now()}\n')
+    print('task worked')
     Room.objects.clear_expired_rooms()
