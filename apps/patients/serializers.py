@@ -1,6 +1,9 @@
+from django.core.cache import cache
+from django.utils.crypto import get_random_string
 from rest_framework import serializers
 
 from apps.patients.models import Patient
+from apps.shared.tasks import send_activation_email
 
 from apps.users.serializers import UserSerializer
 
@@ -17,8 +20,9 @@ class PatientCreateSerializer(serializers.ModelSerializer):
         user_serializer = UserSerializer(data=user_data)
         user_serializer.is_valid(raise_exception=True)
         user = user_serializer.save()
+        user.save()
         patient = Patient.objects.create(user=user)
-        patient.total_cost = patient.get_total_cost_invoices()
+        # patient.total_cost = patient.get_total_cost_invoices()
         patient.save()
 
         return patient
@@ -71,4 +75,4 @@ class PatientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
-        fields = ['user','total_cost']
+        fields = ['user', 'total_cost']

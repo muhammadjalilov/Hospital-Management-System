@@ -14,3 +14,4 @@ class User(AbstractUser, BaseModel):
     gender = models.CharField(max_length=5,choices=GenderChoices.choices)
     address = models.CharField(max_length=512,blank=True, null=True)
     phone_number = PhoneNumberField(blank=True, null=True)
+    is_verified = models.BooleanField(default=False)
